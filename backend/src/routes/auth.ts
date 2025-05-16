@@ -53,7 +53,8 @@ router.post('/signin', async (req, res) => {
     }
 
     // Check password
-    if (user.password !== password) {
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) {
       return res.status(400).json({ message: 'Invalid password' });
     }
 

@@ -16,7 +16,7 @@ export default function SignUp() {
     e.preventDefault();
     try {
       await authService.signUp(formData);
-      navigate('/dashboard');
+      navigate('/signin');
     } catch (err) {
       setError('Error creating account');
     }

@@ -2,10 +2,15 @@ import { useState, useEffect } from 'react';
 import taskService from '../services/task';
 import type { Task, CreateTaskData, UpdateTaskData, Priority } from '../types/task';
 
+type StatusFilter = 'all' | 'active' | 'completed';
+type PriorityFilter = 'all' | Priority;
+
 export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
   const [newTask, setNewTask] = useState<CreateTaskData>({
     title: '',
     description: '',
@@ -29,6 +34,20 @@ export default function Tasks() {
       setLoading(false);
     }
   };
+
+  // Filter tasks based on status and priority
+  const filteredTasks = tasks.filter(task => {
+    const statusMatch = 
+      statusFilter === 'all' ? true :
+      statusFilter === 'completed' ? task.completed :
+      !task.completed;
+
+    const priorityMatch = 
+      priorityFilter === 'all' ? true :
+      task.priority === priorityFilter;
+
+    return statusMatch && priorityMatch;
+  });
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,6 +122,35 @@ export default function Tasks() {
     <div className="max-w-4xl mx-auto p-4">
       <h2 className="text-2xl font-bold text-white mb-6">Tasks</h2>
       
+      {/* Filters */}
+      <div className="flex space-x-4 mb-6">
+        <div>
+          <label className="block text-white mb-2">Status</label>
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as StatusFilter)}
+            className="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="all">All</option>
+            <option value="active">Active</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-white mb-2">Priority</label>
+          <select
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value as PriorityFilter)}
+            className="px-3 py-2 bg-gray-700 text-white rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="all">All</option>
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
+        </div>
+      </div>
+
       {/* Task Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
         <div className="bg-gray-800 p-4 rounded-lg">
@@ -187,7 +235,7 @@ export default function Tasks() {
 
       {/* Task List */}
       <div className="space-y-4">
-        {tasks.map(task => (
+        {filteredTasks.map(task => (
           <div
             key={task._id}
             className="bg-gray-800 p-4 rounded-lg flex items-start justify-between"
