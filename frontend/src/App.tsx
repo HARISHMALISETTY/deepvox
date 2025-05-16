@@ -1,6 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import SignIn from './components/Auth/SignIn';
-import SignUp from './components/Auth/SignUp';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
+import SignUp from './components/SignUp';
+import SignIn from './components/SignIn';
+import Dashboard from './components/Dashboard';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css'
 
 function App() {
@@ -34,23 +36,17 @@ function App() {
         </nav>
 
         <Routes>
-          <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
+          <Route path="/signin" element={<SignIn />} />
           <Route
-            path="/"
+            path="/dashboard"
             element={
-              <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-                <div className="px-4 py-6 sm:px-0">
-                  <h1 className="text-3xl font-bold text-gray-900">
-                    Welcome to Your App
-                  </h1>
-                  <p className="mt-4 text-lg text-gray-600">
-                    Please sign in or create an account to continue.
-                  </p>
-                </div>
-              </div>
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
             }
           />
+          <Route path="/" element={<Navigate to="/signin" replace />} />
         </Routes>
       </div>
     </Router>
