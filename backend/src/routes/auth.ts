@@ -79,4 +79,9 @@ router.post('/signin', async (req, res) => {
   }
 });
 
+// Sign out
+router.post('/signout', (req, res) => {
+  res.json({ message: 'Signed out successfully' });
+});
+
 export default router; 

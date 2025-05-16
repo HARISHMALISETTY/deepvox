@@ -20,9 +20,19 @@ const authService = {
   },
 
   async signOut(): Promise<void> {
-    await axios.post(`${API_URL}/auth/signout`, {}, {
-      withCredentials: true
-    });
+    try {
+      await axios.post(`${API_URL}/auth/signout`, {}, {
+        withCredentials: true,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      localStorage.removeItem('token');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still remove the token even if the server request fails
+      localStorage.removeItem('token');
+    }
   }
 };
 
