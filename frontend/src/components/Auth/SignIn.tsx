@@ -7,6 +7,7 @@ const SignIn = () => {
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
+    console.log('Form data:', formData);
     e.preventDefault();
     try {
       const response = await fetch('http://localhost:3000/api/auth/signin', {
@@ -15,6 +16,7 @@ const SignIn = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(formData),
+        
       });
       
       if (response.ok) {

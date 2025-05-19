@@ -2,6 +2,9 @@ import express from 'express';
 import jwt from 'jsonwebtoken';
 import Task from '../models/Task.js';
 import type { AuthRequest } from '../types/index.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -14,7 +17,8 @@ const auth = async (req: AuthRequest, res: express.Response, next: express.NextF
       return res.status(401).json({ message: 'No authentication token, access denied' });
     }
 
-    const decoded = jwt.verify(token, 'your-secret-key') as { userId: string };
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY || '8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w!z%C*F-JaNdRgUkXp2') as { userId: string };
+    console.log('Decoded token:', decoded);
     req.user = { userId: decoded.userId };
     next();
   } catch (error) {

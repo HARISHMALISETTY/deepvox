@@ -1,6 +1,9 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
 
@@ -22,7 +25,7 @@ router.post('/signup', async (req, res) => {
     // Create token
     const token = jwt.sign(
       { userId: user._id },
-      'your-secret-key',
+      process.env.JWT_SECRET_KEY || '8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w!z%C*F-JaNdRgUkXp2',
       { expiresIn: '24h' }
     );
 
@@ -61,7 +64,7 @@ router.post('/signin', async (req, res) => {
     // Create token
     const token = jwt.sign(
       { userId: user._id },
-      'your-secret-key',
+      process.env.JWT_SECRET_KEY || '8x/A?D(G+KbPeShVmYq3s6v9y$B&E)H@McQfTjWnZr4u7w!z%C*F-JaNdRgUkXp2',
       { expiresIn: '24h' }
     );
 
