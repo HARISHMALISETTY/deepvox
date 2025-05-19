@@ -24,7 +24,7 @@ const auth = async (req: AuthRequest, res: express.Response, next: express.NextF
       return res.status(401).json({ message: 'User not found' });
     }
 
-    req.user = { userId: user._id.toString() };
+    req.user = { userId: (user as any)._id.toString() };
     next();
   } catch (error) {
     res.status(401).json({ message: 'Token is invalid' });
