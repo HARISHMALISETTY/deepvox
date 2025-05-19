@@ -3,12 +3,26 @@ import type { Task, CreateTaskData, UpdateTaskData } from '../types/task';
 
 const API_URL = 'http://localhost:3000/api';
 
+interface PaginatedResponse {
+  tasks: Task[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 const taskService = {
-  async getTasks(): Promise<Task[]> {
+  async getTasks(page = 1, limit = 5): Promise<PaginatedResponse> {
     const token = localStorage.getItem('token');
     const response = await axios.get(`${API_URL}/tasks`, {
       headers: {
         Authorization: `Bearer ${token}`
+      },
+      params: {
+        page,
+        limit
       }
     });
     return response.data;

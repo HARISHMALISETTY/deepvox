@@ -9,6 +9,8 @@ export default function Tasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
   const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>('all');
   const [newTask, setNewTask] = useState<CreateTaskData>({
@@ -21,12 +23,13 @@ export default function Tasks() {
 
   useEffect(() => {
     fetchTasks();
-  }, []);
+  }, [currentPage]);
 
   const fetchTasks = async () => {
     try {
-      const data = await taskService.getTasks();
-      setTasks(data);
+      const response = await taskService.getTasks(currentPage);
+      setTasks(response.tasks);
+      setTotalPages(response.pagination.totalPages);
       setError('');
     } catch (err) {
       setError('Failed to fetch tasks');
@@ -343,6 +346,29 @@ export default function Tasks() {
           </div>
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="mt-6 flex justify-center space-x-2">
+          <button
+            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-4 py-2 bg-gray-700 text-white rounded-md disabled:opacity-50"
+          >
+            Previous
+          </button>
+          <span className="px-4 py-2 text-white">
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-4 py-2 bg-gray-700 text-white rounded-md disabled:opacity-50"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
 } 

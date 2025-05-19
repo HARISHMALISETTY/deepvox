@@ -29,8 +29,27 @@ const auth = async (req: AuthRequest, res: express.Response, next: express.NextF
 // Get all tasks for the current user
 router.get('/', auth, async (req: AuthRequest, res: express.Response) => {
   try {
-    const tasks = await Task.find({ user: req.user?.userId });
-    res.json(tasks);
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 5;
+    const skip = (page - 1) * limit;
+
+    const [tasks, total] = await Promise.all([
+      Task.find({ user: req.user?.userId })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+      Task.countDocuments({ user: req.user?.userId })
+    ]);
+
+    res.json({
+      tasks,
+      pagination: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tasks' });
   }
