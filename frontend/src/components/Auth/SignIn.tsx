@@ -1,33 +1,24 @@
-import { useState } from 'react';
+import { useState } from "react";
+import authService from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('Form data:', formData);
     e.preventDefault();
+    setError("");
     try {
-      const response = await fetch('http://localhost:3000/api/auth/signin', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-        
-      });
-      
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        // Redirect or update UI state
-      } else {
-        console.error('Sign in failed');
-      }
+      await authService.signIn(formData);
+      navigate("/dashboard"); // Redirect to dashboard after successful login
     } catch (error) {
-      console.error('Error:', error);
+      setError("Invalid email or password");
+      console.error("Error:", error);
     }
   };
 
@@ -46,6 +37,9 @@ const SignIn = () => {
             Sign in to your account
           </h2>
         </div>
+        {error && (
+          <div className="text-red-500 text-center text-sm">{error}</div>
+        )}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -94,4 +88,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn; 
+export default SignIn;

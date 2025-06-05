@@ -1,42 +1,36 @@
-import { useState } from 'react';
+import { useState } from "react";
+import authService from "../../services/auth";
+import { useNavigate } from "react-router-dom";
 
 const SignUp = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
   });
+  const [error, setError] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
     if (formData.password !== formData.confirmPassword) {
-      alert("Passwords don't match!");
+      setError("Passwords don't match!");
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:3000/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
+      await authService.signUp({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
       });
-      
-      if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        // Redirect or update UI state
-      } else {
-        console.error('Sign up failed');
-      }
+      navigate("/dashboard"); // Redirect to dashboard after successful signup
     } catch (error) {
-      console.error('Error:', error);
+      setError("Failed to create account. Please try again.");
+      console.error("Error:", error);
     }
   };
 
@@ -55,6 +49,9 @@ const SignUp = () => {
             Create your account
           </h2>
         </div>
+        {error && (
+          <div className="text-red-500 text-center text-sm">{error}</div>
+        )}
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="rounded-md shadow-sm -space-y-px">
             <div>
@@ -133,4 +130,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp; 
+export default SignUp;
